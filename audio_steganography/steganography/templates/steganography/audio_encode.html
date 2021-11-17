@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}<title>Steganography Encode</title>{% endblock title %}
+
+{% block body %}
+<div class="container text-center">
+
+{% if request.method == "GET" %}
+    <form method="POST" enctype="multipart/form-data" onsubmit="$('#btnEncrypt').hide();$('#btnLoader').show();">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6 text-center">
+                <div class="form-group">
+                    <label style="font-weight: bold;font-size: smaller;">Select Audio File (Wave File Only) *</label>
+                    <br>
+                    <input style="margin-left: 50px;" id="audioFile" type="file" name="audio_file" accept="audio/wav" required>
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <span style="font-weight: bold;font-size: smaller;">Audio Preview</span> <br>
+                <audio id="audioPreview" style="cursor: no-drop;" controls>
+                    <source src="" type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio> 
+            </div>
+        </div>
+        <br> 
+
+        <span style="font-weight: bold;font-size: smaller;">Secret Text (Maximum 140 characters are allowed) *</span><br>
+        <textarea name="secret_text" cols="50" rows="3" maxlength="140" placeholder="Enter Secret Text (Maximum 140 characters are allowed) *" required></textarea>
+        <br>   <br>   
+
+        <span style="font-weight: bold;font-size: smaller;">Receiver Public Key *</span><br>
+        <textarea name="public_key" cols="50" rows="5" placeholder="Enter Receiver Public Key To Encrypt Message  *" required></textarea>
+        <br>   <br>   
+
+        <button id="btnEncrypt" type="submit" class="btn btn-success">Encrypt</button>
+        <button id="btnLoader" style="display: none;cursor: no-drop;" class="btn btn-success" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Encrypting . . .
+        </button>
+    </form>
+{% else %}
+    {% if output_path %}
+        <span style="font-weight: bold;font-size: smaller;">Encrypted Audio</span> <br>
+        <audio id="audioPreview" controls>
+            <source src="/media/{{output_path}}" type="audio/wav">
+            Your browser does not support the audio element.
+        </audio> 
+        <br><br>
+        <a class="btn btn-success" href="/media/{{output_path}}" role="button" download>
+            Download Audio &nbsp; <i class="fa fa-download" aria-hidden="true"></i>
+        </a>
+    {% else %}
+         <div class="col-md-4 offset-md-4" style="border: 2px ridge red;padding: 20px;word-wrap: break-word;color:red">
+            Encryption failed, Incorrect Public Key
+        </div>
+    {% endif %}
+{% endif %}
+
+</div>
+{% endblock body %}
+
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        $("#audioFile").change(function(){
+            var imgBlobUrl = URL.createObjectURL(this.files[0]);
+            $("#audioPreview source").attr("src",imgBlobUrl);
+            $("#audioPreview")[0].load(imgBlobUrl)
+            $("#audioPreview").css({"cursor":""});
+        });
+    });
+</script>
+{% endblock script %}

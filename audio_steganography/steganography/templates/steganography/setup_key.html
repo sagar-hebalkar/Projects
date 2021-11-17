@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}<title>Setup Key</title>{% endblock title %}
+
+{% block body %}
+<div class="container">
+        <div class="col-md-12">
+            <p>
+                RSA algorithm is asymmetric cryptography algorithm. Asymmetric actually means that it works on 
+                two different keys i.e. Public Key and Private Key. 
+                As the name describes that the Public Key is given to everyone and Private key is kept private.
+                <br>
+                This technique makes sure that the message has been encrypted before hiding it into a audio.
+                <br><br>
+                So, you need to have your public key to encrypt secret text before embedding into audio 
+                and private key to decrypt secret text after extracting from audio
+            </p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Generate New Key Pair</button>
+            </form> 
+        </div>
+        <br> <br>
+        <div class="row">
+            <div class="col-md-6">
+                <span style="font-weight: bold;font-size: smaller;">
+                    Public Key (n,e)
+                    &nbsp;
+                    <i onclick="copyToClipboard('public_key');" style="cursor: pointer;font-size: 15px;" class="fa fa-clone" aria-hidden="true"></i>
+                    &nbsp;
+                    <span id="public_key" style="color: lightgreen;display: none;">Key copied successfully</span>
+                </span><br>
+                <textarea name="public_key" rows="7" cols="50" disabled>{{public_key}}</textarea>
+                <br><span style="color: green;font-size: 12px;">You can share this key with anyone</span>
+            </div>
+            <div class="col-md-6">
+                <span style="font-weight: bold;font-size: smaller;">
+                    Private Key (n,e,d,p,q)
+                    &nbsp;
+                    <i onclick="copyToClipboard('private_key');" style="cursor: pointer;font-size: 15px;" class="fa fa-clone" aria-hidden="true"></i>
+                    &nbsp;
+                    <span id="private_key" style="color: lightgreen;display: none;">Key copied successfully</span>
+                </span><br>
+                <textarea name="private_key" rows="7" cols="50" disabled>{{private_key}}</textarea>
+                <br><span style="color: red;font-size: 12px;">Do not share this key with anyone, keep it secret</span>
+            </div>
+        </div>
+</div>
+{% endblock body %}
+
+
+{% block script %}
+<script>
+    function copyToClipboard(key_type){
+        var element = $("textarea[name="+key_type+"]");
+        element.prop("disabled",false);
+        element.select();
+        var status = document.execCommand("copy");
+        if (status)
+            $("#"+key_type+"").show();
+            element.prop("disabled",true);
+    }
+</script>
+{% endblock script %}

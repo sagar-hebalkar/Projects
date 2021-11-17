@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}<title>Steganography Decode</title>{% endblock title %}
+
+{% block body %}
+<div class="container text-center">
+
+{% if request.method == "GET" %}
+    <form method="POST" enctype="multipart/form-data" onsubmit="$('#btnEncrypt').hide();$('#btnLoader').show();">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6 text-center">
+                <div class="form-group">
+                    <label style="font-weight: bold;font-size: smaller;">Select Encrypted Audio File (Wave File Only) *</label>
+                    <br>
+                    <input style="margin-left: 50px;" id="audioFile" type="file" name="audio_file" accept="audio/wav" required>
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <span style="font-weight: bold;font-size: smaller;">Encrypted Audio Preview</span> <br>
+                <audio id="audioPreview" style="cursor: no-drop;" controls>
+                    <source src="" type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio> 
+            </div>
+        </div>
+        <br> 
+
+        <span style="font-weight: bold;font-size: smaller;">Your Private Key *</span><br>
+        <textarea name="private_key" cols="50" rows="7" placeholder="Enter Your Private Key To Decrypt Message *" required></textarea>
+        <br>   <br> 
+
+        <button id="btnEncrypt" type="submit" class="btn btn-success">Decrypt</button>
+        <button id="btnLoader" style="display: none;cursor: no-drop;" class="btn btn-success" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Decrypting . . .
+        </button>
+    </form>
+{% else %}
+    {% if secret_text %}
+        <span style="font-weight: bold;color: green;">Secret Text Hidden Inside Audio File Is,</span>
+        <br> <br>
+        <div class="col-md-4 offset-md-4" style="border: 2px ridge lightgreen;padding: 20px;word-wrap: break-word;">
+            {{secret_text}}
+        </div>
+    {% else %}
+         <div class="col-md-4 offset-md-4" style="border: 2px ridge red;padding: 20px;word-wrap: break-word;color:red">
+            Decryption failed, Incorrect Private Key
+        </div>
+    {% endif %}
+{% endif %}
+
+</div>
+{% endblock body %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        $("#audioFile").change(function(){
+            var imgBlobUrl = URL.createObjectURL(this.files[0]);
+            $("#audioPreview source").attr("src",imgBlobUrl);
+            $("#audioPreview")[0].load(imgBlobUrl)
+            $("#audioPreview").css({"cursor":""});
+        });
+    });
+</script>
+{% endblock script %}
