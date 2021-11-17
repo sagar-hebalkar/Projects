@@ -1,0 +1,64 @@
+{% extends 'auth_base.html' %}
+{% load static %}
+
+{% block title %}<title>Unidentified Image</title>{% endblock title %}
+
+{% block header %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.css" />
+{% endblock header %}
+
+{% block auth_body %}
+
+<div class="popup-gallery container text-center">
+    {% if unidentified_img_url %}
+        <div class="row">
+            {% for img_url in unidentified_img_url %}
+                <div class="col-4" style="padding: 5px;">
+                    <a class="image-popup-no-margins" href="{{img_url}}" title="Unidentified Image">
+                        <img src="{{img_url}}" width="300" height="200" alt="Unidentified Image">
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <span style="color: red;font-weight: bold;">No Unidentified Image Has Been Found </span>
+    {% endif %}
+</div>
+{% endblock auth_body %}
+
+
+{% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.popup-gallery').magnificPopup({
+            type: 'image',
+            delegate: 'a',
+            tLoading: 'Loading image #%curr%...',
+            closeOnContentClick: true,
+            closeBtnInside: false,
+            fixedContentPos: true,
+            mainClass: 'mfp-no-margins mfp-with-zoom', // class to remove default margin from left and right side
+            image: {
+                verticalFit: true
+            },
+            gallery: {
+                enabled: true,
+                navigateByImgClick: true,
+                preload: [0,1] // Will preload 0 - before current, and 1 after the current image
+            },
+            zoom: {
+                enabled: true,
+                duration: 300 // don't foget to change the duration also in CSS
+            },
+            callbacks: {
+                resize: function(){
+                    var img = this.content.find('img');
+                    img.css('height', 'auto');
+                    img.css('width', '1000px');
+                }
+            }
+        });
+    });
+</script>
+{% endblock script %}

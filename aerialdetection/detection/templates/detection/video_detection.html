@@ -1,0 +1,76 @@
+{% extends 'auth_base.html' %}
+{% load static %}
+
+{% block title %}<title>Video Detection</title>{% endblock title %}
+
+{% block auth_body %}
+
+<form method="POST" enctype="multipart/form-data" onsubmit="$('#btnDetect').hide();$('#btnLoader').show();$('button').attr('disabled', 'disabled');">
+    <div class="col-md-4 offset-md-5">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Select Video File</label>
+            <br>
+            <input id="imgFile" type="file" name="file" accept="video/mp4" required>
+        </div>
+    </div>
+
+    <br> <br>
+
+    <div class="row">
+        <div class="col-md-5 text-center">
+            {% if video_filename %}
+                <video height="300" width="400" src="/media/input_video/{{video_filename}}" controls></video>
+            {% else %}
+                <video style="cursor: no-drop;" id="inputPreview" height="300" width="400" 
+                    poster="{% static 'images/video-preview.png' %}"></video>
+            {% endif %}
+            <br>
+            <span>Input Video</span>
+        </div>
+
+        <div class="col-md-2 text-center" style="display: block;margin-top: auto;margin-bottom: auto;">
+            <button id="btnDetect" type="submit" class="btn btn-success">Detect</button>
+            <button id="btnLoader" style="display: none;cursor: no-drop;" class="btn btn-success" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Processing . . .
+            </button>
+            {% if detection %}
+                <br>     <br>
+                <span style="color: green;font-weight: bold;text-decoration: underline;">Detected Objects : </span>
+                {% for obj in detection %}
+                    <p style="margin-bottom: 1px;">{{obj|capfirst}}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="col-md-5 text-center">
+            {% if video_filename %}
+                <video height="300" width="400" src="/media/output_video/{{video_filename}}" controls></video>
+            {% else %}
+                <video style="cursor: no-drop;" height="300" width="400" 
+                    poster="{% static 'images/video-preview.png' %}"></video>
+            {% endif %}
+            <br>
+            <span>Output Video</span>
+        </div>
+    </div>
+
+</form>
+
+{% endblock auth_body %}
+
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        $("#imgFile").change(function(){
+            var imgBlobUrl = URL.createObjectURL(this.files[0]);
+            $("#inputPreview").prop("src",imgBlobUrl);
+            $("#inputPreview").css({"cursor":"pointer"});
+            $("#inputPreview").prop("controls",true);
+            $("#inputPreview").prop("poster","");
+        });
+    });   
+</script>
+{% endblock script %}

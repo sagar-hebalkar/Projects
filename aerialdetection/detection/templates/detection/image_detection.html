@@ -1,0 +1,118 @@
+{% extends 'auth_base.html' %}
+{% load static %}
+
+{% block title %}<title>Image Detection</title>{% endblock title %}
+
+{% block header %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.css" />
+{% endblock header %}
+
+{% block auth_body %}
+
+<form method="POST" enctype="multipart/form-data" onsubmit="$('#btnDetect').hide();$('#btnLoader').show();">
+    <div class="col-md-4 offset-md-5">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Select Image File</label>
+            <br>
+            <input id="imgFile" type="file" name="file" accept="image/jpeg" required>
+        </div>
+    </div>
+
+    <br> <br>
+
+    <div class="row preview-gallery">
+        <div class="col-md-5 text-center">
+            {% if img_filename %}
+                <a class="image-popup-no-margins" href="/media/input_img/{{img_filename}}" title="Input Image">
+                    <img id="inputPreview" style="width: 350px;height: 300px;border: 1px solid lightgrey;cursor: zoom-in;"
+                        src="/media/input_img/{{img_filename}}" alt="Image Preview">
+                </a>
+            {% else %}
+                <img id="inputPreview" style="width: 350px;height: 300px;border: 1px solid lightgrey;cursor: no-drop;"
+                    src="{% static 'images/image-preview.png' %}" alt="Image Preview">
+            {% endif %}
+            <br>
+            <span>Input Image</span>
+        </div>
+
+        <div class="col-md-2 text-center" style="display: block;margin-top: auto;margin-bottom: auto;">
+            <button id="btnDetect" type="submit" class="btn btn-success">Detect</button>
+            <button id="btnLoader" style="display: none;cursor: no-drop;" class="btn btn-success" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Processing . . .
+            </button>
+            {% if img_filename %}
+                {% if detection %}
+                    <br>     <br>
+                    <span style="color: green;font-weight: bold;text-decoration: underline;">Detected Objects : </span>
+                    {% for obj in detection %}
+                        <p style="margin-bottom: 1px;">{{obj.name|capfirst}} : {{obj.percentage_probability|floatformat}}%</p>
+                    {% endfor %}
+                {% else %}
+                    <br>     <br>
+                    <span style="color: red;font-weight: bold;">No Objects Detected </span>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="col-md-5 text-center">
+            {% if img_filename %}
+                {% if detection %}
+                    <a class="image-popup-no-margins" href="/media/output_img/{{img_filename}}" title="Output Image">
+                        <img style="width: 350px;height: 300px;border: 1px solid lightgrey;cursor: zoom-in;"
+                            src="/media/output_img/{{img_filename}}" alt="Image Preview">
+                    </a>
+                {% else %}
+                    <a class="image-popup-no-margins" href="/media/unidentified_img/{{img_filename}}" title="Unidentified Image">
+                        <img style="width: 350px;height: 300px;border: 1px solid lightgrey;cursor: zoom-in;"
+                            src="/media/unidentified_img/{{img_filename}}" alt="Image Preview">
+                    </a>
+                {% endif %}
+            {% else %}
+                <img style="width: 350px;height: 300px;border: 1px solid lightgrey;cursor: no-drop;"
+                    src="{% static 'images/image-preview.png' %}" alt="Image Preview">
+            {% endif %}
+            <br>
+            <span>Output Image</span>
+        </div>
+    </div>
+
+</form>
+
+{% endblock auth_body %}
+
+
+{% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $("#imgFile").change(function(){
+            var imgBlobUrl = URL.createObjectURL(this.files[0]);
+            $("#inputPreview").prop("src",imgBlobUrl);
+        });
+
+        $('.image-popup-no-margins').magnificPopup({
+            type: 'image',
+            closeOnContentClick: true,
+            closeBtnInside: false,
+            fixedContentPos: true,
+            mainClass: 'mfp-no-margins mfp-with-zoom', // class to remove default margin from left and right side
+            image: {
+                verticalFit: true
+            },
+            zoom: {
+                enabled: true,
+                duration: 300 // don't foget to change the duration also in CSS
+            },
+            callbacks: {
+                resize: function(){
+                    var img = this.content.find('img');
+                    img.css('height', 'auto');
+                    img.css('width', '1000px');
+                }
+            }
+        });
+    });
+</script>
+{% endblock script %}

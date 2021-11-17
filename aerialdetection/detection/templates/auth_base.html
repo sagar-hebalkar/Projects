@@ -1,0 +1,61 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    {% block title %}{% endblock title %}
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"> </script>
+    {% block header %}{% endblock header %}
+</head>
+<body>
+
+<br>
+
+<div class="container" style="border: 1px solid lightgrey;padding: 20px;">
+    <div class="row">
+        <div class="col-md-3" style="margin-top: auto;margin-bottom: auto;display: block;">
+            <h3 style="color:green;font-weight: bold;text-align: center;margin:0px;"> Aerial Detection </h3>
+        </div>
+        <div class="col-md-2 text-center" style="margin-top: auto;margin-bottom: auto;display: block;">
+            <a class="btn btn-primary" href="{% url 'image_detection' %}" role="button">Image Detetction</a>
+        </div>
+        <div class="col-md-2 text-center" style="margin-top: auto;margin-bottom: auto;display: block;">
+            <a class="btn btn-primary" href="{% url 'video_detection' %}"  role="button">Video Detetction</a>
+        </div>
+        <div class="col-md-3 text-center" style="margin-top: auto;margin-bottom: auto;display: block;flex: 0 0 20%;max-width: 20%;">
+            <a class="btn btn-primary" href="{% url 'unidentified_img' %}"  role="button">Unidentified Images</a>
+        </div>
+        
+        <div class="col-md-2 text-right" style="margin-top: auto;margin-bottom: auto;display: block;">
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <i>{{ request.user }} &nbsp;<i class="far fa-user-circle"></i></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br>
+
+<div class="container" style="border: 1px solid lightgrey;padding: 20px;">
+    {% block auth_body %} {% endblock auth_body %}
+</div>
+
+
+{% block script %}{% endblock script %}
+
+</body>
+</html>
